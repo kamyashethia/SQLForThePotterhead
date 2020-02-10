@@ -15,17 +15,18 @@ Before we talk about left joins, lets talk about the pets of the wizarding world
 Let's consider a table to hold some of the first year students at Hogwarts during Harry's year. This table will have two columns: 
 1. `id` : A unique id used to identify a wizarding student 
 2. `name` : The student's full name 
+3. `house` : Their hogwarts house 
 
 Here's the table, populated with some students: 
 
- id |        name        
----- | --------------------
-  1 | Neville Longbotton
-  2 | Ronald Weasley
-  3 | Harry Potter
-  4 | Draco Malfoy
-  5 | Seamus Finnigan
-  6 | Hermione Granger
+ id |        name        |   house    
+----|--------------------|------------
+  1 | Neville Longbotton | Gryffindor
+  2 | Ronald Weasley     | Gryffindor
+  3 | Harry Potter       | Gryffindor
+  4 | Draco Malfoy       | Slytherin
+  5 | Seamus Finnigan    | Gryffindor
+  6 | Hermione Granger   | Gryffindor
   
   Now, let's create a table to hold information about the student's pets. The table will hold the following information: 
   1. `id`: Unique id used to identify the pet 
@@ -45,6 +46,8 @@ Here's the table, populated with some students:
   6 | Norbert     | Dragon  |      100
   
   Let's understand this table, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
-  
+
+Students are expected to keep their pets with them in their dormitories. We're casting a spell to find all students and pets who are allowed to be in the Gryffindor dormitory. 
+
 
   
