@@ -47,7 +47,27 @@ Here's the table, populated with some students:
   
   Let's understand this table, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
 
-Students are expected to keep their pets with them in their dormitories. We're casting a spell to find all students and pets who are allowed to be in the Gryffindor dormitory. 
+A student's pet is allowed in their house dormitory. Can we write a query to give us all the students who are allowed in the Gryffindor dormitory, with the name of their pet, if they have them. 
 
+Let's break down the requirements. We need: 
+1. All the students who are allowed in the Gryffindor dormitory
+2. Any pet's that they might have. 
 
+Let's start by extracting the data we need from the `wizards` table. We want to filter the data to the student's who are in the Gryffindor house. We can do that with a `WHERE` clause. 
+
+Let's look what this query returns: `SELECT * FROM wizard WHERE house = 'Gryffindor'` 
+
+id |        name        |   house    
+----|--------------------|------------
+  1 | Neville Longbotton | Gryffindor
+  2 | Ronald Weasley     | Gryffindor
+  3 | Harry Potter       | Gryffindor
+  5 | Seamus Finnigan    | Gryffindor
+  6 | Hermione Granger   | Gryffindor
+  
+  The query returned every student in the table except Malfoy, who is in Slytherin. 
+  
+  Next, we want to find the pet corresponding to the wizard. Since we're talking about combining the data present in two separate tables, we need to use a `JOIN`.
+  
+ 
   
