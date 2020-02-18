@@ -8,6 +8,7 @@ We will cover:
 3. Outer Joins
 4. Cross Joins 
 
+--- 
 
 1. Left Joins 
 
