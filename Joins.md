@@ -83,7 +83,8 @@ The query returned every student in the table except Malfoy, who is in Slytherin
 
 ```sh 
 
-postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor'; 
+postgres=#
+SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor'; 
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
   1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
@@ -123,7 +124,8 @@ This all looks good. Let's step through this query.
 Our table has very few rows, so we probably won't run into any performance issues. However, I generally like looking at the query planner and look at the execution plan.  We can use postgres's `EXPLAIN ANALYZE` clause for this. 
 
 ```sh 
-postgres=# EXPLAIN ANALYZE SELECT wizard.name, pet.name FROM wizard
+postgres=#
+EXPLAIN ANALYZE SELECT wizard.name, pet.name FROM wizard
 LEFT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.house = 'Gryffindor';
                                                   QUERY PLAN                                                   
 ---------------------------------------------------------------------------------------------------------------
@@ -235,7 +237,7 @@ SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.owner_id AND
 
 Nice, this returned the same data. We've learnt about the `INNER JOIN`!  
 
-## 3. Left Outer Join:
+## 3.1 Left Outer Join:
 #### Hagrid has some extra pets, and he's thinking about giving some away as Christmas gifts. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
 
 We want all the students who don't have pets. Let's start by visualizing this: 
@@ -275,7 +277,8 @@ SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE pet.owner_i
 
 Yay! We just return Seamus Finnigan's name. According to our dataset, he is the only wizard without a pet. 
 
-## Right Outer Join: Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are being fed. Can we help him find all the pets that don't have owners listed? 
+## 3.2 Right Outer Join:
+#### Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are being fed. Can we help him find all the pets that don't have owners listed? 
 
 Let's start by visualizing the data we need, using a set diagram: 
 
@@ -286,7 +289,8 @@ This is very similar to the example we just discussed with the `LEFT OUTER JOIN`
 1. Let's write a RIGHT JOIN, that will give us all the pet's, and attach their owner's if they have them: 
 
 ```sh 
-postgres=#                                                                                                     SELECT * FROM wizard RIGHT JOIN pet ON wizard.id = pet.owner_id;
+postgres=#                                                                                                     
+SELECT * FROM wizard RIGHT JOIN pet ON wizard.id = pet.owner_id;
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
   1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
@@ -302,7 +306,8 @@ postgres=#                                                                      
 2. The pet's without owners have the `wizard.id` field blank. Let's use this to just return the pet's with no listed owners: 
 
 ```sh 
-postgres=#  SELECT pet.name FROM wizard RIGHT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.name IS null;
+postgres=# 
+SELECT pet.name FROM wizard RIGHT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.name IS null;
   name   
 ---------
  Brodwin
@@ -314,13 +319,13 @@ postgres=#
 
 Let's examine the SQL:
 
-```sql 
 1. SELECT pet.name : Select only the pet's name  
 2. FROM wizard : the table on the left 
 3. RIGHT JOIN pet : the table on the right 
 4. ON wizard.id = pet.owner_id : the join clause, which specifies how we want the rows from the two tables to be joined
 5. WHERE wizard.name IS null; : filtering out all the rows that are present in both tables, leaving behind only the rows from the pets table, that are not present in the wizards table 
-```
+
+We have written a left and a write outer join! 
 ___
 References 
 1. Postgres docs for planner optimizer : https://www.postgresql.org/docs/12/planner-optimizer.html
