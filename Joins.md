@@ -1,6 +1,4 @@
-Querying data with SQL can feel magical, and JOINS are one of the things that feel the most magical to me. For the longest time, I would look for a lovely image on the internet that visualized joins, pick the join I wanted, and write the query. 
-
-In this article, I'm going to explain the magic behind joins. 
+Querying data with SQL can feel magical, and JOINS are one of the things that feel the most magical to me. In this article, I'm going to explain the magic behind joins. 
 
 We will cover: 
 1. Left Joins 
@@ -9,9 +7,7 @@ We will cover:
 
 --- 
 
-1. Left Joins 
-
-Before we talk about left joins, lets talk about the pets of the wizarding world. Students at Hogwarts are allowed to bring with them an owl OR a cat OR a toad. 
+Let's start with some setup and talk about the pets of the wizarding world. Students at Hogwarts are allowed to bring with them an owl OR a cat OR a toad. 
 
 Let's consider a table to hold some of the first year students at Hogwarts during Harry's year, with the following columns:
 1. `id` : A unique id used to identify a wizarding student 
@@ -51,7 +47,8 @@ Here's the table, populated with some students:
 
 A student's pet is allowed in their house dormitory. 
 
-## The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
+
+## Left Joins: The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
 
 Let's break down the requirements. We need:
 
@@ -116,8 +113,8 @@ Let's break down the query
  
   1. `SELECT wizard.name, pet.name`: The SELECT clause specifies the fields we want to see in our results. We're only interested in the wizard's name, and the pet's name for our case
   2. `FROM wizard` : The first table, or the table on the left for our join 
-  3. `LEFT JOIN pet` : the `LEFT JOIN` clause 
-  4. `ON wizard.id` = pet.owner_id :  We specify what we are joining ON. This is generally a field present in both tables, that has a foreign-key-esque relationship 
+  3. `LEFT JOIN pet` : the LEFT JOIN clause 
+  4. `ON wizard.id = pet.owner_id` :  We specify what we are joining ON. This is generally a field present in both tables, that has a foreign-key-esque relationship 
   5. `WHERE house = 'Gryffindor';` : We filter down our results to only include rows where the wizard's house is in Gryffindor. We don't need to specify `wizard.house`, because the `pet` table does not include that column. 
   
 Our table has very few rows, so we probably won't run into any performance issues. However, I generally like looking at the query planner and look at the execution plan.  We can use postgres's `EXPLAIN ANALYZE` clause for this. 
@@ -140,31 +137,29 @@ LEFT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.house = 'Gryffindor';
 (10 rows)
 
 ```
-In general, the most indented piece of the output get's executed first. Towards the bottom of the output, we see that we performed a scan on the wizards table, and filtered out all rows whose owners were not in Gryffindor. This confirms that we won't be scanning and joining unnecessary data. 
+In general, the most indented piece of the `EXPLAIN` output is executed first. Towards the bottom of the output, we see that we performed a scan on the wizards table, and filtered out all rows whose owners were not in Gryffindor. This means that we won't be scanning and joining unnecessary data. 
 
-While we won't go deep into the output of `EXPLAIN ANALYZE`, you might see the `Hash Right Join` in the output, and be confused about the descrepency between our SQL syntax, and how the query planner wants to operate.
+You might see the `Hash Right Join` at the start output, and be confused about the descrepency between our SQL syntax, and how the query planner wants to operate.
 
 The answer can be found in Postgres's documentation. It turns out, for hash joins, postgres will load the data for the table on the right first 
 
 _hash join: the right relation is first scanned and loaded into a hash table, using its join attributes as hash keys. Next the left relation is scanned and the appropriate values of every row found are used as hash keys to locate the matching rows in the table._ 
 
-This doesn't impact our query. Lines 1-4 specify the type of join Postgres is running (a hash join), and lists how the query planner will access the data.  
-
-We learnt how to write `LEFT JOIN`!
+This doesn't impact our query. Lines 1-4 specify the type of join Postgres is running (a hash join), and lists how the query planner will access the data. There is timing information in the output, which we will ignore for now.  
 
 
-## I want to send a letter but none of the school owl's are available. Can we write a query that will return the name of all the student's who have owls, so I can find one to borrow?? 
+## Inner Joins: Luna Lovegood wants to send a letter but none of the school owl's are available. Can we write a query that will return the name of all the student's who have owls, so she can find one to borrow?? 
 
-Let's start by thinking of the data we need from each table. We want: 
+Let's start by thinking of the data we need from each table: 
 1. From the `pet` table, we want all the pets that are owls 
 2. From the `wizard` table, we want all the wizards who have pets that are owls
 
 Drawing a quick venn diagram, the relationship might look something like this: 
 ![Venn diagram for join](inner_join.png)
 
-Since we are only interested in data present in both tables, we will write an inner join. Let's do this in steps: 
+Since we are only interested in data present in both tables, we will write an inner join. Let's write some SQL: 
 
-1. Get all pet's that are owls: 
+1.First, let's get all pet's that are owls: 
 
 ```sh 
 
@@ -203,51 +198,36 @@ postgres=# SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.
 (2 rows)
 ```
 
-Let's analyze this query by line: 
+Let's step through this query.
 
+1. `SELECT wizard.name, pet.name` : We want to select just two fields, the name of the pet, and the name of the wizard. 
+2. `FROM pet` : pet is our first table, or the table to the left 
+3. `JOIN wizard` :  When we don't specify a type of join, it is assumed we want to run an inner join 
+4. `ON wizard.id = pet.owner_id` : The ON clause
+5. `WHERE pet.species = 'owl';` : We filter down to only pets that are owls 
+
+The `INNER JOIN` clause also comes with alternate syntax, which has slightly fewer words to type. 
+You could run: 
 ```sql 
-1. SELECT wizard.name, pet.name
-2. FROM pet
-3. JOIN wizard
-4. ON wizard.id = pet.owner_id
-5. WHERE pet.species = 'owl';
+SELECT wizard.name, pet.name
+FROM pet, wizard
+WHERE wizard.id = pet.owner_id
+AND pet.species = 'owl'
 ```
-
-1. We want to select just two fields, the name of the pet, and the name of the wizard. 
-2. `pet` is our first table 
-3. We want to `JOIN` pet with the `wizard` table. When we don't specify a type of join, it is assumed we want to run an inner join 
-4. We specify which fields we want to join `ON`. 
-5. We filter down to only pets that are owls 
-
-Let's run the `EXPLAIN ANALYZE` statement on this query.  
+Notice that the `JOIN .. ON` statement is absent. Instead, we specify both the tables in the `FROM` clause, and specify the condition with `WHERE`. Let's see this in action 
 
 ```sh 
-
-postgres=# EXPLAIN ANALYZE SELECT wizard.name, pet.name FROM pet
-JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
-                                                 QUERY PLAN                                                 
-------------------------------------------------------------------------------------------------------------
-1. Hash Join  (cost=13.78..29.18 rows=4 width=236) (actual time=0.100..0.103 rows=2 loops=1)
-2.   Hash Cond: (wizard.id = pet.owner_id)
-3.   ->  Seq Scan on wizard  (cost=0.00..13.90 rows=390 width=122) (actual time=0.015..0.017 rows=6 loops=1)
-4.   ->  Hash  (cost=13.75..13.75 rows=2 width=122) (actual time=0.040..0.040 rows=3 loops=1)
-5.         Buckets: 1024  Batches: 1  Memory Usage: 9kB
-6.         ->  Seq Scan on pet  (cost=0.00..13.75 rows=2 width=122) (actual time=0.013..0.016 rows=3 loops=1)
-7.               Filter: ((species)::text = 'owl'::text)
-8.               Rows Removed by Filter: 4
-9. Planning Time: 0.134 ms
-10. Execution Time: 0.266 ms
-(10 rows)
-
+postgres=# SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.owner_id AND pet.species = 'owl';
+     name     |  name  
+--------------+--------
+ Harry Potter | Hedwig
+ Draco Malfoy | unkown
+(2 rows)
 ```
-Let's skip over the timing details, and try and read this at a high level to understand the order of operations. The lines with the highest level of indentation happen first. 
-So reading this, we first perform the operation on line 6, where we filter the rows in the `pet` table to only keep the owls. On line 1, we see that we will be using a `HASH JOIN`, and lines 2,3 and 4 inform us of the operations taking place to perform this join. 
 
-I've glossed over many details about the query planner, but this should help you get familiar with the pieces I would look for here.
+Nice, this returned the same data. We've learnt about the `INNER JOIN`!  
 
-Yay! We've learnt about the `INNER JOIN`. 
-
-## Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wanta to find the names of all the students who don't have pets. Can we help him?
+## Left Outer Join: Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wanta to find the names of all the students who don't have pets. Can we help him?
 
 We want all the student's who don't have pets. Let's start by visualizing this: 
 
@@ -284,7 +264,7 @@ All 6 rows in our wizards table are present. If a wizard has a pet, they have be
 
 Yay! We just return Seamus Finnigan's name. According to our dataset, he is the only wizard without a pet. We have learnt about a `LEFT OUTER JOIN`.
 
-## Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are fed. Can we help him find all the pets that don't have owners listed? 
+## Right Outer Join: Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are fed. Can we help him find all the pets that don't have owners listed? 
 
 Let's start by visualizing the data we need, using a set diagram: 
 
