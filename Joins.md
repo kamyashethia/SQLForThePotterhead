@@ -44,14 +44,15 @@ Here's the table, populated with some students:
   1 | Scabbers    | rat     |        2
   3 | Hedwig      | owl     |        3
   4 | Crookshanks | cat     |        6
-  5 | unknown      | owl     |        4
+  5 | unknown     | owl     |        4
   6 | Norbert     | Dragon  |      100
+  7 | Brodwin     | owl     |       10
   
   Let's understand this table, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
 
 A student's pet is allowed in their house dormitory. 
 
-## Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
+## The Fat Lady's portrait is updating her knowledge to make sure only the authorized folks have access to student dorms. Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
 
 Let's break down the requirements. We need: 
 1. All the students who are allowed in the Gryffindor dormitory
@@ -172,7 +173,101 @@ This doesn't impact our query.
 We learnt how to write `LEFT JOIN`s, how to debug some syntax issues and peek into the query planner's behaviour. 
 
 
+## I want to send a letter but none of the school owl's are available. Can we write a query that will return the name of all the student's who have owls, so I can find one to borrow?? 
 
+Let's start by thinking of the data we need from each table. We want: 
+1. From the `pet` table, we want all the pets that are owls 
+2. From the `wizard` table, we want all the wizards who have pets that are owls
+
+Drawing a quick venn diagram, the relationship might look something like this: 
+![Venn diagram for join](inner_join.png)
+
+Since we are only interested in data present in both tables, we will write an inner join. Let's do this in steps: 
+
+1. Get all pet's that are owls: 
+
+```sh 
+
+postgres=# SELECT * FROM pet WHERE species = 'owl';
+ id |  name   | species | owner_id 
+----+---------+---------+----------
+  3 | Hedwig  | owl     |        3
+  5 | unknown  | owl     |        4
+  7 | Brodwin | owl     |       10
+(3 rows)
+
+```
+Our query returned 3 owls. We can't just send someone's owl on an errand, so we will have to join this with the owners table 
+
+2. 
+
+```sh 
+postgres=# SELECT * FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
+ id |  name  | species | owner_id | id |     name     |   house    
+----+--------+---------+----------+----+--------------+------------
+  3 | Hedwig | owl     |        3 |  3 | Harry Potter | Gryffindor
+  5 | unkown | owl     |        4 |  4 | Draco Malfoy | Slytherin
+(2 rows)
+
+```
+Nice, it looks like we only have 2 rows. There is no wizard with an `owner_id` of 10 in the wizards table, so it's appropriate that Brodwin the owl is not present in our data.
+
+3. Let's now just filter down to the columns we need: 
+
+```sh 
+postgres=# SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
+     name     |  name  
+--------------+--------
+ Harry Potter | Hedwig
+ Draco Malfoy | unkown
+(2 rows)
+```
+
+Let's analyze this query by line: 
+
+```sql 
+1. SELECT wizard.name, pet.name
+2. FROM pet
+3. JOIN wizard
+4. ON wizard.id = pet.owner_id
+5. WHERE pet.species = 'owl';
+```
+
+1. We want to select just two fields, the name of the pet, and the name of the wizard. 
+2. `pet` is our first table 
+3. We want to `JOIN` pet with the `wizard` table. When we don't specify a type of join, it is assumed we want to run an inner join 
+4. We specify which fields we want to join `ON`. 
+5. We filter down to only pets that are owls 
+
+Let's run the `EXPLAIN ANALYZE` statement on this query.  
+
+```sh 
+
+postgres=# EXPLAIN ANALYZE SELECT wizard.name, pet.name FROM pet
+JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+1. Hash Join  (cost=13.78..29.18 rows=4 width=236) (actual time=0.100..0.103 rows=2 loops=1)
+2.   Hash Cond: (wizard.id = pet.owner_id)
+3.   ->  Seq Scan on wizard  (cost=0.00..13.90 rows=390 width=122) (actual time=0.015..0.017 rows=6 loops=1)
+4.   ->  Hash  (cost=13.75..13.75 rows=2 width=122) (actual time=0.040..0.040 rows=3 loops=1)
+5.         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+6.         ->  Seq Scan on pet  (cost=0.00..13.75 rows=2 width=122) (actual time=0.013..0.016 rows=3 loops=1)
+7.               Filter: ((species)::text = 'owl'::text)
+8.               Rows Removed by Filter: 4
+9. Planning Time: 0.134 ms
+10. Execution Time: 0.266 ms
+(10 rows)
+
+```
+Let's skip over the timing details, and try and read this at a high level to understand the order of operations. The lines with the highest level of indentation happen first. 
+So reading this, we first perform the operation on line 6, where we filter the rows in the `pet` table to only keep the owls. On line 1, we see that we will be using a `HASH JOIN`, and lines 2,3 and 4 inform us of the operations taking place to perform this join. 
+
+I've glossed over many details about the query planner, but this should help you get familiar with the pieces I would look for here.
+
+Yay! We've learnt about the `INNER JOIN`. 
+
+## I want to find the names of all the students who don't have pets. Can I do this? 
 
 ___
 References 
