@@ -43,7 +43,7 @@ Here's the table, populated with some students:
   1 | Scabbers    | rat     |        2
   3 | Hedwig      | owl     |        3
   4 | Crookshanks | cat     |        6
-  5 | unkown      | owl     |        4
+  5 | unknown      | owl     |        4
   6 | Norbert     | Dragon  |      100
   
   Let's understand this table, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
