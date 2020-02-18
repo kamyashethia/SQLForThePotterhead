@@ -9,7 +9,7 @@ We will cover:
 
 Let's start with some setup and talk about the pets of the wizarding world. Students at Hogwarts are allowed to bring with them an owl OR a cat OR a toad. 
 
-Let's consider a table to hold some of the first year students at Hogwarts during Harry's year, with the following columns:
+Let's consider a table to hold some of the students at Hogwarts. The table will have the following schema:
 1. `id` : A unique id used to identify a wizarding student 
 2. `name` : The student's full name 
 3. `house` : Their hogwarts house 
@@ -43,17 +43,17 @@ Here's the table, populated with some students:
   6 | Norbert     | Dragon  |      100
   7 | Brodwin     | owl     |       10
   
-  Let's understand this table, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
-
-A student's pet is allowed in their house dormitory. 
+  Let's confirm our understanding of this table is correct, by looking at the pet with id = 3. The pet's name is Hedwig, and it's owner_id is 3. Looking at the `wizard` table, Harry Potter has an id of 3. The data indicates that Harry Potter owns Hedwig, which is what we would expect. 
 
 
-## Left Joins: The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
+## 1.Left Joins:
+
+#### The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students and pets that are allowed in the Gryffindor dormitory?
 
 Let's break down the requirements. We need:
 
 1. All the students who are allowed in the Gryffindor dormitory
-2. Any pet's that belong to students from Gryffindor
+2. Any pets that belong to students from Gryffindor
 
 Let's start by using a set diagram to understand what data we need: 
   ![Venn diagram for join](left_join2.png)
@@ -79,7 +79,7 @@ id |        name        |   house
   
 The query returned every student in the table except Malfoy, who is in Slytherin. 
   
-2. I want to write a join that combines this data with the pets table. 
+2. Now, let's write a JOIN to combine this data with that of the `pet` table: 
 
 ```sh 
 
@@ -94,11 +94,14 @@ postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE 
 (5 rows)
 ```
 
-3. Yay! I see all the student's in Gryffindor, and all the appropriate pets. Let's now filter down to only select the table fields we need. 
+I see all the student's in Gryffindor, and all the appropriate pets. But, we have too many rows.
+
+3.Let's filter down to only select the fields we need. 
 
 ```sh
 
-postgres=# postgres=# SELECT wizard.name, pet.name FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor';
+postgres= #
+SELECT wizard.name, pet.name FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor';
         name        |    name     
 --------------------+-------------
  Neville Longbottom | Trevor
@@ -109,9 +112,9 @@ postgres=# postgres=# SELECT wizard.name, pet.name FROM wizard LEFT JOIN pet ON 
 (5 rows)
 
 ```
-Let's break down the query 
+This all looks good. Let's step through this query.
  
-  1. `SELECT wizard.name, pet.name`: The SELECT clause specifies the fields we want to see in our results. We're only interested in the wizard's name, and the pet's name for our case
+  1. `SELECT wizard.name, pet.name`: The SELECT clause specifies the fields we want to see in our results. We're only interested in the wizard's name, and the pet's name
   2. `FROM wizard` : The first table, or the table on the left for our join 
   3. `LEFT JOIN pet` : the LEFT JOIN clause 
   4. `ON wizard.id = pet.owner_id` :  We specify what we are joining ON. This is generally a field present in both tables, that has a foreign-key-esque relationship 
@@ -148,7 +151,8 @@ _hash join: the right relation is first scanned and loaded into a hash table, us
 This doesn't impact our query. Lines 1-4 specify the type of join Postgres is running (a hash join), and lists how the query planner will access the data. There is timing information in the output, which we will ignore for now.  
 
 
-## Inner Joins: Luna Lovegood wants to send a letter but none of the school owls are available. Can we write a query that will return the name of all the students who have owls, so she can find one to borrow?? 
+## 2. Inner Joins:
+#### Luna Lovegood wants to send a letter but none of the school owls are available. Can we write a query that will return the name of all the students who have owls, so she can find one to borrow?? 
 
 Let's start by thinking of the data we need from each table: 
 1. From the `pet` table, we want all the pets that are owls 
@@ -159,11 +163,12 @@ Drawing a quick venn diagram, the relationship might look something like this:
 
 Since we are only interested in data present in both tables, we will write an inner join. Let's write some SQL: 
 
-1.First, let's get all pets that are owls: 
+1. First, let's get all pets that are owls: 
 
 ```sh 
 
-postgres=# SELECT * FROM pet WHERE species = 'owl';
+postgres=# 
+SELECT * FROM pet WHERE species = 'owl';
  id |  name   | species | owner_id 
 ----+---------+---------+----------
   3 | Hedwig  | owl     |        3
@@ -177,7 +182,8 @@ Our query returned 3 owls. We can't just send someone's owl on an errand, so we 
 2. Let's write a JOIN:
 
 ```sh 
-postgres=# SELECT * FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
+postgres=# 
+SELECT * FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
  id |  name  | species | owner_id | id |     name     |   house    
 ----+--------+---------+----------+----+--------------+------------
   3 | Hedwig | owl     |        3 |  3 | Harry Potter | Gryffindor
@@ -190,7 +196,8 @@ Nice, it looks like we only have 2 rows. There is no wizard with an `owner_id` o
 3. Let's now just filter down to the columns we need: 
 
 ```sh 
-postgres=# SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
+postgres=#
+SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
      name     |  name  
 --------------+--------
  Harry Potter | Hedwig
@@ -217,7 +224,8 @@ AND pet.species = 'owl'
 Notice that the `JOIN .. ON` statement is absent. Instead, we specify both the tables in the `FROM` clause, and specify the condition with `WHERE`. Let's see this in action 
 
 ```sh 
-postgres=# SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.owner_id AND pet.species = 'owl';
+postgres=#
+SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.owner_id AND pet.species = 'owl';
      name     |  name  
 --------------+--------
  Harry Potter | Hedwig
@@ -227,7 +235,8 @@ postgres=# SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.o
 
 Nice, this returned the same data. We've learnt about the `INNER JOIN`!  
 
-## Left Outer Join: Hagrid has some extra pets, and he's thinking about giving some away as Christmas gifts. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
+## 3. Left Outer Join:
+#### Hagrid has some extra pets, and he's thinking about giving some away as Christmas gifts. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
 
 We want all the students who don't have pets. Let's start by visualizing this: 
 
@@ -240,7 +249,8 @@ Let's start writing the query.
 1. First, we will write a left join. This will give us all the wizards, and attach their pets if they have them: 
 
 ```sh 
-postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id;
+postgres=#
+SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id;
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
   1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
@@ -255,7 +265,8 @@ All 6 rows in our wizards table are present. If a wizard has a pet, they have be
 
 2. Looking at the data above, you might notice that the `owner_id` is blank for the wizards that did not have pets. Let's use that to filter down to just the wizards that have no pets: 
 
-```sh SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE pet.owner_id IS NULL;
+```sh 
+SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE pet.owner_id IS NULL;
  id |      name       |   house    | id | name | species | owner_id 
 ----+-----------------+------------+----+------+---------+----------
   5 | Seamus Finnigan | Gryffindor |    |      |         |         
