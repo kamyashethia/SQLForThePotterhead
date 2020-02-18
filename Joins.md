@@ -18,7 +18,7 @@ Here's the table, populated with some students:
 
  id |        name        |   house    
 ----|--------------------|------------
-  1 | Neville Longbotton | Gryffindor
+  1 | Neville Longbottom | Gryffindor
   2 | Ronald Weasley     | Gryffindor
   3 | Harry Potter       | Gryffindor
   4 | Draco Malfoy       | Slytherin
@@ -69,7 +69,7 @@ postgres=# `SELECT * FROM wizard WHERE house = 'Gryffindor'`
 
 id |        name        |   house    
 ----|--------------------|------------
-  1 | Neville Longbotton | Gryffindor
+  1 | Neville Longbottom | Gryffindor
   2 | Ronald Weasley     | Gryffindor
   3 | Harry Potter       | Gryffindor
   5 | Seamus Finnigan    | Gryffindor
@@ -86,7 +86,7 @@ The query returned every student in the table except Malfoy, who is in Slytherin
 postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor'; 
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
-  1 | Neville Longbotton | Gryffindor |  2 | Trevor      | toad    |        1
+  1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
   2 | Ronald Weasley     | Gryffindor |  1 | Scabbers    | rat     |        2
   3 | Harry Potter       | Gryffindor |  3 | Hedwig      | owl     |        3
   6 | Hermione Granger   | Gryffindor |  4 | Crookshanks | cat     |        6
@@ -101,7 +101,7 @@ postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE 
 postgres=# postgres=# SELECT wizard.name, pet.name FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gryffindor';
         name        |    name     
 --------------------+-------------
- Neville Longbotton | Trevor
+ Neville Longbottom | Trevor
  Ronald Weasley     | Scabbers
  Harry Potter       | Hedwig
  Hermione Granger   | Crookshanks
@@ -139,7 +139,7 @@ LEFT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.house = 'Gryffindor';
 ```
 In general, the most indented piece of the `EXPLAIN` output is executed first. Towards the bottom of the output, we see that we performed a scan on the wizards table, and filtered out all rows whose owners were not in Gryffindor. This means that we won't be scanning and joining unnecessary data. 
 
-You might see the `Hash Right Join` at the start output, and be confused about the descrepency between our SQL syntax, and how the query planner wants to operate.
+You might see the `Hash Right Join` at the start output, and be confused about the discrepency between our SQL syntax, and how the query planner wants to operate.
 
 The answer can be found in Postgres's documentation. It turns out, for hash joins, postgres will load the data for the table on the right first 
 
@@ -148,7 +148,7 @@ _hash join: the right relation is first scanned and loaded into a hash table, us
 This doesn't impact our query. Lines 1-4 specify the type of join Postgres is running (a hash join), and lists how the query planner will access the data. There is timing information in the output, which we will ignore for now.  
 
 
-## Inner Joins: Luna Lovegood wants to send a letter but none of the school owl's are available. Can we write a query that will return the name of all the student's who have owls, so she can find one to borrow?? 
+## Inner Joins: Luna Lovegood wants to send a letter but none of the school owls are available. Can we write a query that will return the name of all the students who have owls, so she can find one to borrow?? 
 
 Let's start by thinking of the data we need from each table: 
 1. From the `pet` table, we want all the pets that are owls 
@@ -159,7 +159,7 @@ Drawing a quick venn diagram, the relationship might look something like this:
 
 Since we are only interested in data present in both tables, we will write an inner join. Let's write some SQL: 
 
-1.First, let's get all pet's that are owls: 
+1.First, let's get all pets that are owls: 
 
 ```sh 
 
@@ -181,7 +181,7 @@ postgres=# SELECT * FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.s
  id |  name  | species | owner_id | id |     name     |   house    
 ----+--------+---------+----------+----+--------------+------------
   3 | Hedwig | owl     |        3 |  3 | Harry Potter | Gryffindor
-  5 | unkown | owl     |        4 |  4 | Draco Malfoy | Slytherin
+  5 | unknown | owl     |        4 |  4 | Draco Malfoy | Slytherin
 (2 rows)
 
 ```
@@ -194,7 +194,7 @@ postgres=# SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.
      name     |  name  
 --------------+--------
  Harry Potter | Hedwig
- Draco Malfoy | unkown
+ Draco Malfoy | unknown
 (2 rows)
 ```
 
@@ -221,19 +221,19 @@ postgres=# SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.o
      name     |  name  
 --------------+--------
  Harry Potter | Hedwig
- Draco Malfoy | unkown
+ Draco Malfoy | unknown
 (2 rows)
 ```
 
 Nice, this returned the same data. We've learnt about the `INNER JOIN`!  
 
-## Left Outer Join: Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wanta to find the names of all the students who don't have pets. Can we help him?
+## Left Outer Join: Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
 
-We want all the student's who don't have pets. Let's start by visualizing this: 
+We want all the students who don't have pets. Let's start by visualizing this: 
 
 ![Venn diagram for join](left_outer_join.png)
 
-Looking at the diagram, this looks very similiar to the one for our left join, except that we now want to exclude data that is present in both the tables. 
+Looking at the diagram, this looks very similar to the one for our left join, except that we now want to exclude data that is present in both the tables. 
 
 Let's start writing the query. 
 
@@ -243,12 +243,12 @@ Let's start writing the query.
 postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id;
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
-  1 | Neville Longbotton | Gryffindor |  2 | Trevor      | toad    |        1
+  1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
   2 | Ronald Weasley     | Gryffindor |  1 | Scabbers    | rat     |        2
   3 | Harry Potter       | Gryffindor |  3 | Hedwig      | owl     |        3
   5 | Seamus Finnigan    | Gryffindor |    |             |         |         
   6 | Hermione Granger   | Gryffindor |  4 | Crookshanks | cat     |        6
-  4 | Draco Malfoy       | Slytherin  |  5 | unkown      | owl     |        4
+  4 | Draco Malfoy       | Slytherin  |  5 | unknown      | owl     |        4
 (6 rows)
 ```
 All 6 rows in our wizards table are present. If a wizard has a pet, they have been added.
@@ -278,11 +278,11 @@ This is very similar to the example we just discussed with the `LEFT OUTER JOIN`
 postgres=#                                                                                                     SELECT * FROM wizard RIGHT JOIN pet ON wizard.id = pet.owner_id;
  id |        name        |   house    | id |    name     | species | owner_id 
 ----+--------------------+------------+----+-------------+---------+----------
-  1 | Neville Longbotton | Gryffindor |  2 | Trevor      | toad    |        1
+  1 | Neville Longbottom | Gryffindor |  2 | Trevor      | toad    |        1
   2 | Ronald Weasley     | Gryffindor |  1 | Scabbers    | rat     |        2
   3 | Harry Potter       | Gryffindor |  3 | Hedwig      | owl     |        3
   6 | Hermione Granger   | Gryffindor |  4 | Crookshanks | cat     |        6
-  4 | Draco Malfoy       | Slytherin  |  5 | unkown      | owl     |        4
+  4 | Draco Malfoy       | Slytherin  |  5 | unknown      | owl     |        4
     |                    |            |  7 | Brodwin     | owl     |       10
     |                    |            |  6 | Norbert     | Dragon  |      100
 (7 rows)
