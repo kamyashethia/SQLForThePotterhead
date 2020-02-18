@@ -95,7 +95,7 @@ SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE house = 'Gr
 (5 rows)
 ```
 
-I see all the student's in Gryffindor, and all the appropriate pets. But, we have too many rows.
+I see all the student's in Gryffindor, and all the appropriate pets. But, we have too many columns.
 
 3.Let's filter down to only select the fields we need. 
 
