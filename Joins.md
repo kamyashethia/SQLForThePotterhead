@@ -138,4 +138,42 @@ When I'm trying to understand SQL, I find that adding indentation is really impo
 3. `LEFT JOIN pet`: the `LEFT JOIN` clause 
 4. `ON wizard.id = pet.owner_id` : We specify what we are joining ON. This is generally a field present in both tables, that has a foreign-key-esque relationship 
 5. `WHERE house = 'Gryffindor'`: We filter down our results to only include rows where the wizard's house is in Gryffindor. We don't need to specify `wizard.house`, because the `pet` table does not include that column.  
-  
+
+Our table has very few rows, so we probably won't run into any performance issues. However, when we have more rows, we might want to make sure that we aren't joining _all_ the data, and then filtering it. Most database's have a query planner which will handle this changes for us. We can use postgres's `EXPLAIN ANALYZE` clause to confirm this. 
+
+```sh 
+postgres=# EXPLAIN ANALYZE SELECT wizard.name, pet.name FROM wizard
+LEFT JOIN pet ON wizard.id = pet.owner_id WHERE wizard.house = 'Gryffindor';
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Hash Right Join  (cost=14.90..29.05 rows=3 width=236) (actual time=0.045..0.056 rows=5 loops=1)
+   Hash Cond: (pet.owner_id = wizard.id)
+   ->  Seq Scan on pet  (cost=0.00..13.00 rows=300 width=122) (actual time=0.006..0.008 rows=6 loops=1)
+   ->  Hash  (cost=14.88..14.88 rows=2 width=122) (actual time=0.030..0.030 rows=5 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+         ->  Seq Scan on wizard  (cost=0.00..14.88 rows=2 width=122) (actual time=0.020..0.023 rows=5 loops=1)
+               Filter: ((house)::text = 'Gryffindor'::text)
+               Rows Removed by Filter: 1
+ Planning Time: 0.122 ms
+ Execution Time: 0.091 ms
+(10 rows)
+
+```
+In general, the most indented piece of the output get's executed first. Towards the bottom of the output, we see that we performed a scan on the wizards table, and filtered out all rows whose owners were not in Gryffindor. This confirms that we won't be scanning and joining unnecessary data. 
+
+While we won't go deep into the output of `EXPLAIN ANALYZE`, you might see the `Hash Right Join` in the output, and be confused about the descrepency between our SQL syntax, and how the query planner wants to operate.
+
+The answer can be found in Postgres's documentation. It turns out, for hash joins, postgres will load the data for the table on the right first 
+
+_hash join: the right relation is first scanned and loaded into a hash table, using its join attributes as hash keys. Next the left relation is scanned and the appropriate values of every row found are used as hash keys to locate the matching rows in the table._ 
+
+This doesn't impact our query. 
+
+We learnt how to write `LEFT JOIN`s, how to debug some syntax issues and peek into the query planner's behaviour. 
+
+
+
+
+___
+References 
+1. Postgres docs for planner optimizer : https://www.postgresql.org/docs/12/planner-optimizer.html
