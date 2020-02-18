@@ -6,7 +6,6 @@ We will cover:
 1. Left Joins 
 2. Inner Joins 
 3. Outer Joins
-4. Cross Joins 
 
 --- 
 
@@ -267,7 +266,45 @@ I've glossed over many details about the query planner, but this should help you
 
 Yay! We've learnt about the `INNER JOIN`. 
 
-## I want to find the names of all the students who don't have pets. Can I do this? 
+## Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wanta to find the names of all the students who don't have pets. Can we help him?
+
+We want all the student's who don't have pets. Let's start by visualizing this: 
+
+![Venn diagram for join](left_outer_join.png)
+
+Looking at the diagram, this looks very similiar to the one for our left join, except that we now want to exclude data that is present in both the tables. 
+
+Let's start writing the query. 
+
+1. Let's write a left join, that will give us all the wizards, and attach their pets if they have them: 
+
+```sh 
+postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id;
+ id |        name        |   house    | id |    name     | species | owner_id 
+----+--------------------+------------+----+-------------+---------+----------
+  1 | Neville Longbotton | Gryffindor |  2 | Trevor      | toad    |        1
+  2 | Ronald Weasley     | Gryffindor |  1 | Scabbers    | rat     |        2
+  3 | Harry Potter       | Gryffindor |  3 | Hedwig      | owl     |        3
+  5 | Seamus Finnigan    | Gryffindor |    |             |         |         
+  6 | Hermione Granger   | Gryffindor |  4 | Crookshanks | cat     |        6
+  4 | Draco Malfoy       | Slytherin  |  5 | unkown      | owl     |        4
+(6 rows)
+```
+All 6 rows in our wizards table are present. If a wizard has a pet, they have been added.
+
+2. Looking at the data above, you might notice that the `owner_id` is blank for the wizards that did not have pets. Let's use that to filter down to just the wizards that have no pets: 
+
+```sh SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id WHERE pet.owner_id IS NULL;
+ id |      name       |   house    | id | name | species | owner_id 
+----+-----------------+------------+----+------+---------+----------
+  5 | Seamus Finnigan | Gryffindor |    |      |         |         
+(1 row)
+```
+
+Yay! We just return Seamus Finnigan's name. According to our dataset, he is the only wizard without a pet. We have learnt about a `LEFT OUTER JOIN`.
+
+## Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are fed. Can we help him find all the pets that don't have owners listed? 
+
 
 ___
 References 
