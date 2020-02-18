@@ -174,7 +174,7 @@ postgres=# SELECT * FROM pet WHERE species = 'owl';
 ```
 Our query returned 3 owls. We can't just send someone's owl on an errand, so we will have to join this with the owners table 
 
-2. 
+2. Let's write a JOIN:
 
 ```sh 
 postgres=# SELECT * FROM pet JOIN wizard ON wizard.id = pet.owner_id WHERE pet.species = 'owl';
@@ -198,9 +198,9 @@ postgres=# SELECT wizard.name, pet.name FROM pet JOIN wizard ON wizard.id = pet.
 (2 rows)
 ```
 
-Let's step through this query.
+We have the data we need -- let's step through this query.
 
-1. `SELECT wizard.name, pet.name` : We want to select just two fields, the name of the pet, and the name of the wizard. 
+1. `SELECT wizard.name, pet.name` : We want to select just two fields; the name of the pet, and the name of the wizard. 
 2. `FROM pet` : pet is our first table, or the table to the left 
 3. `JOIN wizard` :  When we don't specify a type of join, it is assumed we want to run an inner join 
 4. `ON wizard.id = pet.owner_id` : The ON clause
@@ -227,7 +227,7 @@ postgres=# SELECT wizard.name, pet.name FROM pet, wizard WHERE wizard.id = pet.o
 
 Nice, this returned the same data. We've learnt about the `INNER JOIN`!  
 
-## Left Outer Join: Hagrid has some extra pet's, and he's thinking about giving some to the student's as a gift. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
+## Left Outer Join: Hagrid has some extra pets, and he's thinking about giving some away as Christmas gifts. To do this, he wants to find the names of all the students who don't have pets. Can we help him?
 
 We want all the students who don't have pets. Let's start by visualizing this: 
 
@@ -237,7 +237,7 @@ Looking at the diagram, this looks very similar to the one for our left join, ex
 
 Let's start writing the query. 
 
-1. Let's write a left join, that will give us all the wizards, and attach their pets if they have them: 
+1. First, we will write a left join. This will give us all the wizards, and attach their pets if they have them: 
 
 ```sh 
 postgres=# SELECT * FROM wizard LEFT JOIN pet ON wizard.id = pet.owner_id;
@@ -262,9 +262,9 @@ All 6 rows in our wizards table are present. If a wizard has a pet, they have be
 (1 row)
 ```
 
-Yay! We just return Seamus Finnigan's name. According to our dataset, he is the only wizard without a pet. We have learnt about a `LEFT OUTER JOIN`.
+Yay! We just return Seamus Finnigan's name. According to our dataset, he is the only wizard without a pet. 
 
-## Right Outer Join: Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are fed. Can we help him find all the pets that don't have owners listed? 
+## Right Outer Join: Hagrid is very worried about abandoned pets, and wants to make sure that all pets without owners are being fed. Can we help him find all the pets that don't have owners listed? 
 
 Let's start by visualizing the data we need, using a set diagram: 
 
