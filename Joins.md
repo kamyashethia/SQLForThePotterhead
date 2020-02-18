@@ -61,7 +61,7 @@ Let's start by using a set diagram to understand what data we need:
 
 It looks like we need _all the data in the left hand side table, along with any common data_. Thinking about the join's available to us, this sounds a lot like a `LEFT JOIN`. Let's write some SQL. 
 
-1. Start by extracting the data we need from the `wizards` table. We want to filter the data to the student's who are in the Gryffindor house. We can do that with a `WHERE` clause. 
+1. Start by extracting the data we need from the `wizards` table. We want to filter the data to the students who are in the Gryffindor house. We can do that with a `WHERE` clause. 
 
 ```postgres
 
@@ -327,5 +327,7 @@ Let's examine the SQL:
 
 We have written a left and a write outer join! 
 ___
+
 References 
 1. Postgres docs for planner optimizer : https://www.postgresql.org/docs/12/planner-optimizer.html
+
