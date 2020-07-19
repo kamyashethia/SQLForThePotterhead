@@ -7,7 +7,6 @@ The idea is to use these to generate fun harry potter themed questions
 ```sql
 SELECT count(*) from characters;
 
-
 ```
 
 #### SELECT DISTINCT 
@@ -27,7 +26,7 @@ select distinct type from spells;
 ```sql 
 SELECT * from spells where effect LIKE '%death%';
 
- SELECT * from spells where effect LIKE '%light%';
+SELECT * from spells where effect LIKE '%light%';
 ```
 
 #### String functions 
@@ -70,6 +69,11 @@ SELECT light, count(*) from spells GROUP BY 1 ORDER BY 2 DESC;
 
 ```
 
+lines per character :
+
+```sql 
+SELECT trim(character), count(*)  from philosophers_stone_dialogue GROUP BY 1 ORDER BY 2 DESC;
+```
 
 #### Timestamp functions
 
@@ -83,21 +87,47 @@ SELECT DATE(death)  from characters WHERE lower(death) NOT LIKE 'late%' LIMIT 5;
 How old was character X when they died? 
 
 ```sql
-SELECT name, DATE(death) as death_day, DATE(birth) as birth_day, DATE(death) - DATE(birth)  from characters WHERE lower(death) NOT LIKE 'late%' AND lower(birth) NOT LIKE 'late%' LIMIT 5;
-(a better one, use age())
-SELECT name, DATE(death) as death_day, DATE(birth) as birth_day, age(DATE(death),DATE(birth))  from characters WHERE lower(death) NOT LIKE 'late%' AND lower(birth) NOT LIKE 'late%' LIMIT 5;
+
+SELECT name, DATE(death) as death_day, DATE(birth) as birth_day, age(DATE(death),DATE(birth))  from characters WHERE birth IS NOT NULL and death IS NOT NULL;
 ```
 All characters born in a month? 
 ```sql 
-# get name and month of birthdays
-SELECT name, date_part('month', DATE(birth)) from characters where lower(birth) NOT LIKE 'late%' AND lower(birth) NOT LIKE '%-%' AND lower(birth) NOT LIKE '%,%' AND lower(birth) NOT LIKE 'pre%' AND lower(birth) NOT LIKE '%before%' AND lower(birth) NOT LIKE '%century%';
 
-SELECT date_part('month', DATE(birth)), COUNT(*) from characters where lower(birth) NOT LIKE 'late%' AND lower(birth) NOT LIKE '%-%' AND lower(birth) NOT LIKE '%,%' AND lower(birth) NOT LIKE 'pre%' AND lower(birth) NOT LIKE '%before%' AND lower(birth) NOT LIKE '%century%' GROUP BY 1 ORDER BY 1;
+SELECT date_part('month', DATE(birth)), COUNT(*) from characters  WHERE birth IS NOT NULL GROUP BY 1 ORDER BY 1;
 
-SELECT to_char(DATE(birth), 'Month'), COUNT(*) from characters where lower(birth) NOT LIKE 'late%' AND lower(birth) NOT LIKE '%-%' AND lower(birth) NOT LIKE '%,%' AND lower(birth) NOT LIKE 'pre%' AND lower(birth) NOT LIKE '%before%' AND lower(birth) NOT LIKE '%century%' GROUP BY 1 ORDER BY 1;
-
+SELECT to_char(DATE(birth), 'Month'), COUNT(*) from characters  WHERE birth IS NOT NULL GROUP BY 1 ORDER BY 1;
 ```
 
+#### Joins: 
+
+- inner join 
+
+```sql
+
+SELECT magical_creatures.name, characters.name, characters.house  FROM magical_creatures JOIN characters ON magical_creatures.owner = characters.name;
+```
+
+```sql
+SELECT characters.name, characters.house, hogwarts_staff.subject_or_position FROM hogwarts_staff JOIN characters on hogwarts_staff.name = characters.name;
+```
+
+- left join 
+```sql
+
+SELECT magical_creatures.name, characters.name, characters.house  FROM characters LEFT JOIN magical_creatures ON magical_creatures.owner = characters.name WHERE house='Gryffindor';
+```
+
+- right join 
+```sql
+
+SELECT magical_creatures.name, characters.name, characters.house  FROM magical_creatures RIGHT  JOIN characters ON magical_creatures.owner = characters.name WHERE house='Gryffindor';
+```
+
+- outer join 
+
+```sql 
+SELECT hogwarts_staff.name,  hogwarts_staff.subject_or_position FROM hogwarts_staff LEFT JOIN characters on hogwarts_staff.name = characters.name WHERE characters.name IS NULL;
+```
 
 #### Row over partition (window functions)
 

@@ -5,13 +5,15 @@ potter=# CREATE TABLE characters (id int, name varchar(50), gender varchar(20), 
 CREATE TABLE
 potter=# COPY characters FROM '/Users/kshethia/development/SQLForThePotterhead/data/Characters.csv' DELIMITER ';' CSV HEADER;
 COPY 140
+
+potter=# ALTER TABLE characters DROP COLUMN gender;
+ALTER TABLE
 potter=# \d characters
                        Table "public.characters"
     Column    |          Type          | Collation | Nullable | Default
 --------------+------------------------+-----------+----------+---------
  id           | integer                |           |          |
  name         | character varying(50)  |           |          |
- gender       | character varying(20)  |           |          |
  job          | character varying(100) |           |          |
  house        | character varying(50)  |           |          |
  wand         | character varying(250) |           |          |
@@ -67,5 +69,26 @@ potter=# \d potions
  difficulty_level  | character varying(50)  |           |          |
 
 potter=#
+
+```
+
+#### Philosophers stone dialogue 
+```sh
+CREATE TABLE  philosophers_stone_dialogue (character varchar(100), dialogue varchar(1000));
+COPY philosophers_stone_dialogue FROM '/Users/kshethia/development/SQLForThePotterhead/data/movie_one_dialogue.csv' DELIMITER ';' CSV HEADER;
+
+```
+
+#### magical creatures 
+```sh
+CREATE TABLE magical_creatures(name varchar(50), breed varchar(50), owner varchar(50));
+COPY magical_creatures FROM '/Users/kshethia/development/SQLForThePotterhead/data/MagicalCreatures.csv' DELIMITER ';' CSV HEADER;
+```
+
+#### hogwarts teachers
+
+```sh
+CREATE TABLE hogwarts_staff (name varchar(50), subject_or_position varchar(100), background varchar(1000));
+COPY hogwarts_staff FROM '/Users/kshethia/development/SQLForThePotterhead/data/HogwartsStaff.csv' DELIMITER '|' CSV HEADER;
 
 ```

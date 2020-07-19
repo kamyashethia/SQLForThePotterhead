@@ -2,7 +2,6 @@
 
 #### Prerequisites 
 ######  install Postgress 
-
 ######  load data 
 
 ###### Basic Queries 
@@ -96,7 +95,7 @@ SELECT name FROM characters LIMIT 5;
 #### String parsing 
 
 #### JOINS 
-(will need to create another table, maybe pets and owners like the article)
+
 #### Window functions 
 
 
