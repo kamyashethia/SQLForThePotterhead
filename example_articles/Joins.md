@@ -5,7 +5,7 @@ We will cover:
 2. Inner Joins 
 3. Outer Joins
 
---- 
+---  
 
 Let's start with some setup and talk about the pets of the wizarding world. Students at Hogwarts are allowed to bring with them an owl OR a cat OR a toad. 
 

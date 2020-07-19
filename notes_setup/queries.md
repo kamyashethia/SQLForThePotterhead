@@ -7,6 +7,9 @@ The idea is to use these to generate fun harry potter themed questions
 ```sql
 SELECT count(*) from characters;
 
+SELECT count(*) from characters WHERE house='Gryffindor';
+
+select COUNT(*) FROM magical_creatures where breed='Owl';
 ```
 
 #### SELECT DISTINCT 
@@ -19,8 +22,11 @@ select distinct loyalty from characters;
 select distinct difficulty_level from potions;
 
 select distinct type from spells;
+
+select distinct breed from magical_creatures;
 ```
 
+#### String functions 
 #### LIKE 
 
 ```sql 
@@ -28,8 +34,6 @@ SELECT * from spells where effect LIKE '%death%';
 
 SELECT * from spells where effect LIKE '%light%';
 ```
-
-#### String functions 
 
 ###### LOWER
 
@@ -98,6 +102,10 @@ SELECT date_part('month', DATE(birth)), COUNT(*) from characters  WHERE birth IS
 SELECT to_char(DATE(birth), 'Month'), COUNT(*) from characters  WHERE birth IS NOT NULL GROUP BY 1 ORDER BY 1;
 ```
 
+All characters born in January: 
+```sql
+SELECT name from characters WHERE date_part('month', DATE(birth)) = 1;
+```
 #### Joins: 
 
 - inner join 
