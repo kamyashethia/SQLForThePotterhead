@@ -13,13 +13,14 @@ On windows, you can follow the installation instructions [here](https://www.post
 
 ####  load data 
 
-1. First create a new database 
+###### Create a new database 
 `psql postgres`
 
 ```sh
 postgres=# CREATE DATABASE  potter;
 CREATE DATABASE
 
+# We list all the databases present. I have some test databases 
 postgres=# \l
                                  List of databases
         Name        |  Owner   | Encoding | Collate | Ctype |   Access privileges
@@ -36,12 +37,21 @@ postgres=# \l
 
 ```
 
-Exit (by typing out exit)
+Exit (by typing out exit). 
+
+###### Clone this repository: 
+- `git clone https://github.com/kamyashethia/SQLForThePotterhead.git`
+- ` cd SQLForThePotterhead`
+
+There is a `potter_db.sql` in this filepath. 
+
+###### Load data into our database:  
 On the command line:
 ```sh
 psql -d potter -f potter_db.sql
 ```
 
+###### Check that the data made it in!
 Connect using psql again
 ```sh
 psql postgres
