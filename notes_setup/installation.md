@@ -15,11 +15,11 @@ postgres=# \l
                              List of databases
    Name    |  Owner   | Encoding | Collate | Ctype |   Access privileges
 -----------+----------+----------+---------+-------+-----------------------
- postgres  | kshethia | UTF8     | C       | C     |
- template0 | kshethia | UTF8     | C       | C     | =c/kshethia          +
-           |          |          |         |       | kshethia=CTc/kshethia
- template1 | kshethia | UTF8     | C       | C     | =c/kshethia          +
-           |          |          |         |       | kshethia=CTc/kshethia
+ postgres  | <YOUR_USERNAME> | UTF8     | C       | C     |
+ template0 | <YOUR_USERNAME> | UTF8     | C       | C     | =c/<YOUR_USERNAME>          +
+           |          |          |         |       | <YOUR_USERNAME>=CTc/<YOUR_USERNAME>
+ template1 | <YOUR_USERNAME> | UTF8     | C       | C     | =c/<YOUR_USERNAME>          +
+           |          |          |         |       | <YOUR_USERNAME>=CTc/<YOUR_USERNAME>
 (3 rows)
 
 #create a new database 

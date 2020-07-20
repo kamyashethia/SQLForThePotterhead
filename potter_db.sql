@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: characters; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: characters; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.characters (
@@ -42,10 +42,9 @@ CREATE TABLE public.characters (
 );
 
 
-ALTER TABLE public.characters OWNER TO kshethia;
 
 --
--- Name: hogwarts_staff; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: hogwarts_staff; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.hogwarts_staff (
@@ -55,10 +54,8 @@ CREATE TABLE public.hogwarts_staff (
 );
 
 
-ALTER TABLE public.hogwarts_staff OWNER TO kshethia;
-
 --
--- Name: magical_creatures; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: magical_creatures; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.magical_creatures (
@@ -68,10 +65,9 @@ CREATE TABLE public.magical_creatures (
 );
 
 
-ALTER TABLE public.magical_creatures OWNER TO kshethia;
 
 --
--- Name: philosophers_stone_dialogue; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: philosophers_stone_dialogue; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.philosophers_stone_dialogue (
@@ -80,10 +76,10 @@ CREATE TABLE public.philosophers_stone_dialogue (
 );
 
 
-ALTER TABLE public.philosophers_stone_dialogue OWNER TO kshethia;
+
 
 --
--- Name: potions; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: potions; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.potions (
@@ -95,10 +91,9 @@ CREATE TABLE public.potions (
 );
 
 
-ALTER TABLE public.potions OWNER TO kshethia;
 
 --
--- Name: spells; Type: TABLE; Schema: public; Owner: kshethia
+-- Name: spells; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.spells (
@@ -110,10 +105,8 @@ CREATE TABLE public.spells (
 );
 
 
-ALTER TABLE public.spells OWNER TO kshethia;
-
 --
--- Data for Name: characters; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: characters; Type: TABLE DATA; Schema: public
 --
 
 COPY public.characters (id, name, job, house, wand, patronus, species, blood_status, hair_color, eye_color, loyalty, skills, birth, death) FROM stdin;
@@ -261,7 +254,7 @@ COPY public.characters (id, name, job, house, wand, patronus, species, blood_sta
 
 
 --
--- Data for Name: hogwarts_staff; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: hogwarts_staff; Type: TABLE DATA; Schema: public
 --
 
 COPY public.hogwarts_staff (name, subject_or_position, background) FROM stdin;
@@ -295,7 +288,7 @@ Septima Vector	\tArithmancy	\tThe Arithmancy teacher during the entire series, k
 
 
 --
--- Data for Name: magical_creatures; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: magical_creatures; Type: TABLE DATA; Schema: public
 --
 
 COPY public.magical_creatures (name, breed, owner) FROM stdin;
@@ -323,7 +316,7 @@ Tenebrus	Thestral	Rubeus Hagrid
 
 
 --
--- Data for Name: philosophers_stone_dialogue; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: philosophers_stone_dialogue; Type: TABLE DATA; Schema: public
 --
 
 COPY public.philosophers_stone_dialogue ("character", dialogue) FROM stdin;
@@ -1918,7 +1911,7 @@ Harry	I'm not going home. Not really.
 
 
 --
--- Data for Name: potions; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: potions; Type: TABLE DATA; Schema: public
 --
 
 COPY public.potions (name, known_ingredients, effect, characteristics, difficulty_level) FROM stdin;
@@ -1998,7 +1991,7 @@ Wound-cleaning potion	\N	Antiseptic	Purple liquid, Smokes on contact, Stings on 
 
 
 --
--- Data for Name: spells; Type: TABLE DATA; Schema: public; Owner: kshethia
+-- Data for Name: spells; Type: TABLE DATA; Schema: public
 --
 
 COPY public.spells (name, incantation, type, effect, light) FROM stdin;
