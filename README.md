@@ -520,10 +520,164 @@ LIMIT 2;
 
 #### JOINS 
 
+When I started to work with joins, I always looked at the following diagram: 
 
+![join_image](images/sql_joins.png)
+(credited URL [link](https://www.pinterest.com/pin/268527196507791080/))
+
+I then diagram the data I want to collect, and looked at the diagram for the SQL. 
+
+###### Inner Join
+
+We want to display the names of characters, any pets they might have, and the house they are associated with. 
+
+Let's look at where our data lives: 
+- The `characters` table contains the `house` and character's `name` 
+- The `magical_creatures` table contains the `owner` and magical creature's `name` 
+
+Our data is present in two different tables, so we need to join it. 
+To join data, we always look for a join 'key' which is a field that is present in both tables. 
+For our case, the `character.name` field should equal the `magical_creatures.owner` field. 
+
+
+Now let's think about what data we want by drawing a diagram: 
+
+![magical_creatures_inner_join](images/magical_creatures_inner_join.png)
+
+We only want the data at the intersection of the two tables. 
+We can get this data by performing an inner join: 
+
+```sql 
+SELECT magical_creatures.name, characters.name, characters.house
+FROM magical_creatures
+JOIN characters
+ON magical_creatures.owner = characters.name;
+``` 
+
+
+```sh 
+    name     |                  name                   |   house
+-------------+-----------------------------------------+------------
+ Crookshanks | Hermione Jean Granger                   | Gryffindor
+ Dobby       | Lucius Malfoy                           | Slytherin
+ Fawkes      | Albus Percival Wulfric Brian Dumbledore | Gryffindor
+ Hedwig      | Harry James Potter                      | Gryffindor
+ Kreacher    | Sirius Black                            | Gryffindor
+ Nagini      | Tom Marvolo Riddle                      | Slytherin
+ Scabbers    | Ronald Bilius Weasley                   | Gryffindor
+ Pigwidgeon  | Ronald Bilius Weasley                   | Gryffindor
+ Hermes      | Percy Ignatius Weasley                  | Gryffindor
+ Arnold      | Ginevra (Ginny) Molly Weasley           | Gryffindor
+ Aragog      | Rubeus Hagrid                           | Gryffindor
+ Buckbeak    | Rubeus Hagrid                           | Gryffindor
+ Fluffy      | Rubeus Hagrid                           | Gryffindor
+ Tenebrus    | Rubeus Hagrid                           | Gryffindor
+(14 rows)
+```
+###### Exercise: 
+1. Hogwarts wants to conduct an audit of all the points awarded by teachers, to make sure they aren't favoring any particular house.  Find the houses of all hogwarts staff.
+2. While performing an audit of our database tables, the wizarding analyst discovers that we have missing data. Find all the teachers that are not present in the characters table. 
+3. The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students (past and present) and pets that are allowed in the Gryffindor dormitory? 
+
+[solutions](solutions/joins.md)
 
 #### Window functions 
 
+SQL allows us to partition data. 
+
+Professor Slughorn is trying to understand Professor Snape's Potions curriculum. 
+He wants to know the average number of ingredients in a potion by difficulty level. Can you help him find this? 
+
+Let's start by looking at the known_ingredients field:
+```sql
+potter=# SELECT known_ingredients FROM potions WHERE known_ingredients IS NOT NULL LIMIT 5;
+                           known_ingredients
+-----------------------------------------------------------------------
+ Newt spleens , Bananas
+ Valerian sprigs, Aconite, Dittany
+ Leaping Toadstools, Frog Brains, Runespoor eggs, Powdered dragon claw
+ Scurvy grass, Lovage, Sneezewort
+ Bursting mushrooms, Salamander blood, Wartcap powder
+(5 rows)
+```
+
+This is a comma-separated list of items. Postgressql has a `string_to_array` [function](https://www.postgresql.org/docs/9.1/functions-array.html) which will help us work with this data. 
+
+```sql
+ potter=# SELECT string_to_array(known_ingredients, ',') FROM potions WHERE known_ingredients IS NOT NULL LIMIT 5;
+                                  string_to_array
+ ---------------------------------------------------------------------------------
+  {"Newt spleens "," Bananas"}
+  {"Valerian sprigs"," Aconite"," Dittany"}
+  {"Leaping Toadstools"," Frog Brains"," Runespoor eggs"," Powdered dragon claw"}
+  {"Scurvy grass"," Lovage"," Sneezewort"}
+  {"Bursting mushrooms"," Salamander blood"," Wartcap powder"}
+ (5 rows)
+
+```
+
+Now, we want to know the length of this array. We can use the `array_length` function to do this. 
+
+ ```sql
+potter=# SELECT string_to_array(known_ingredients, ','), array_length(string_to_array(known_ingredients, ','), 1) FROM potions WHERE known_ingredients IS NOT NULL LIMIT 5;
+                                 string_to_array                                 | array_length
+---------------------------------------------------------------------------------+--------------
+ {"Newt spleens "," Bananas"}                                                    |            2
+ {"Valerian sprigs"," Aconite"," Dittany"}                                       |            3
+ {"Leaping Toadstools"," Frog Brains"," Runespoor eggs"," Powdered dragon claw"} |            4
+ {"Scurvy grass"," Lovage"," Sneezewort"}                                        |            3
+ {"Bursting mushrooms"," Salamander blood"," Wartcap powder"}                    |            3
+(5 rows)
+```
+
+To find the average number of known_ingredients for all potions, we could do the following: 
+
+```sql
+
+potter=# SELECT avg(array_length(string_to_array(known_ingredients, ','), 1)) FROM potions WHERE known_ingredients IS NOT NULL LIMIT 5;
+        avg
+--------------------
+ 3.3095238095238095
+(1 row)
+```
+
+However, we want to find the average by difficulty level. So we will 'partition' the data. 
+
+```sql
+SELECT name, difficulty_level,
+array_length(string_to_array(known_ingredients, ','), 1) AS ingredient_count,
+avg(array_length(string_to_array(known_ingredients, ','), 1)) OVER (PARTITION BY difficulty_level) AS average_ingredient_list
+FROM potions
+WHERE known_ingredients IS NOT NULL AND difficulty_level IS NOT NULL;
+```
+
+```sql
+           name            |   difficulty_level   | ingredient_count | average_ingredient_list
+---------------------------+----------------------+------------------+-------------------------
+ Skele-Gro                 | Above second year    |                3 |      3.0000000000000000
+ Ageing Potion             | Advanced             |                2 |      4.0000000000000000
+ Draught of Living Death   | Advanced             |                6 |      4.0000000000000000
+ Draught of Peace          | Advanced             |                4 |      4.0000000000000000
+ Elixir to Induce Euphoria | Advanced             |                5 |      4.0000000000000000
+ Felix Felicis             | Advanced             |                6 |      4.0000000000000000
+ Herbicide Potion          | Advanced             |                4 |      4.0000000000000000
+ Polyjuice Potion          | Advanced             |                7 |      4.0000000000000000
+ Regeneration potion       | Advanced             |                3 |      4.0000000000000000
+ Rudimentary body potion   | Advanced             |                2 |      4.0000000000000000
+ Sleeping Draught          | Advanced             |                4 |      4.0000000000000000
+ Wolfsbane Potion          | Advanced             |                1 |      4.0000000000000000
+ Forgetfulness Potion      | Beginner             |                4 |      4.0000000000000000
+ Cure for Boils            | Beginner             |                8 |      4.0000000000000000
+ Fake protective potions   | Beginner             |                2 |      4.0000000000000000
+ Fire Protection Potion    | Beginner             |                3 |      4.0000000000000000
+ Swelling Solution         | Beginner             |                3 |      4.0000000000000000
+ Wideye Potion             | Beginner             |                4 |      4.0000000000000000
+ Wit-Sharpening Potion     | Moderate             |                3 |      3.0000000000000000
+ Strengthening Solution    | Moderate to advanced |                2 |      2.0000000000000000
+ Invigoration Draught      | O.W.L. level         |               10 |     10.0000000000000000
+ Confusing Concoction      | Simple to moderate   |                3 |      3.0000000000000000
+(22 rows)
+```
 
 
 
