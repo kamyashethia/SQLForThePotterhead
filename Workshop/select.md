@@ -94,7 +94,7 @@ If you have a large table (with hundreds of thousands of rows) you often don't w
 ```
 Note: there is no guarantee of ordering in a limit clause. You might see different rows returned. 
 
-#### Select data that meets a certain with the WHERE clause
+#### Select data that meets a certain criterion with the WHERE clause
 
 ``` SQL 
 SELECT name, house
