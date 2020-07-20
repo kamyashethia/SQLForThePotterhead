@@ -41,3 +41,6 @@ potter=# \d spells
 Look at the schema of all the other tables in the `potter` database. 
 
 [Solution](../solutions/list_all_schemas.md) 
+
+## Next Section 
+[SELECT ing data](select.md)

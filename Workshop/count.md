@@ -33,3 +33,7 @@ WHERE house='Gryffindor';
 1. The Ministry of Magic wants to conduct an owl census. They want to know how many Owls they have counted so far. Can you get this information from the magical_creatures table? 
 
 [Solution](../solutions/count.md)
+
+## Next Section 
+
+[comparing data in SQL](comparing_data.md)

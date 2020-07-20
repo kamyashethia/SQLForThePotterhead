@@ -109,3 +109,6 @@ potter=# SELECT name, incantation, effect from spells where lower(effect) LIKE '
 2. Can you find all the professors who have taught Defence Against the Dark Arts at hogwarts?
 
 [Solution](../solutions/comparing_data.md)
+
+## Next Section 
+[GROUP -ing and ORDER -ing data](group_order.md)

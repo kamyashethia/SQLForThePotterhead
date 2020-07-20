@@ -65,3 +65,6 @@ LIMIT 2;
 2. Try yourself: Find all the characters born in  the month of January
 
 [Solution](../solutions/time_funcs.md)
+
+## Next Section 
+[Joins](joins.md)

@@ -165,3 +165,8 @@ WHERE name = 'Severus Snape';
 3. Who says :`There will be no foolish wand-waving or silly incantations in this class.` in the first movie 
 
 [Solution](../solutions/select_ans.md) 
+
+
+## Next Section
+[De-duping rows](select_distinct.md) 
+ 

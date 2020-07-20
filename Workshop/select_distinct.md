@@ -52,3 +52,6 @@ potter=# SELECT DISTINCT difficulty_level FROM potions;
 2. The muggle prime minister is furious after learning about magic, and is demanding a list of all types of magical spells. To pacify him, Cornelius Fudge decides to comply. Can you find all the distinct types of spells? 
 
 [Solution](../solutions/select_distinct.md)
+
+## Next Section 
+[COUNT ing results](count.md)

@@ -26,3 +26,6 @@ I always start looking from the `FROM` clause.
 2. Can you find out the name of the character with the most lines in the 1st harry potter movie?
 
 [Solution](../solutions/group_order.md)
+
+## Next Section 
+[Time functions](time_functions.md)

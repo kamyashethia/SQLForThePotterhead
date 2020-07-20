@@ -60,3 +60,6 @@ ON magical_creatures.owner = characters.name;
 3. The Fat Lady's portrait is updating her knowledge to make sure only authorized folks have access to the Gryffindor dorm. Can we write a query that will inform us of all the students (past and present) and pets that are allowed in the Gryffindor dormitory? 
 
 [solutions](../solutions/joins.md)
+
+## Next Section 
+[Partitioning data](window_functions.md)
