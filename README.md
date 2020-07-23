@@ -1,20 +1,23 @@
 # SQLForThePotterhead
 
 ## Prerequisites 
-####  install Postgress 
+###  Install PostgreSQL 
 
-On a mac, you can use homebrew for installation: 
+On a **Mac**, you can use homebrew for installation: 
 - `brew install postgresql `
 - `brew services start postgresql`
-- `psql postgres`
 
+On **Windows**, you can [download](https://www.postgresql.org/download/windows/) and run the installer.
 
-On windows, you can follow the installation instructions [here](https://www.postgresql.org/download/windows/)
+On **Linux**, you can find specific [instructions based on your Linux distribution](https://www.postgresql.org/download/) as well.
 
-####  load data 
+We'll be using the Postgres command-line tool `psql`. To follow along, you can use Terminal in MacOS, Command Prompt in Windows, or 
+your preferred shell.
 
-###### Create a new database 
-`psql postgres`
+###  Load data 
+
+#### Create a new database 
+Login to Postgres via the command line: `psql postgres`
 
 ```sh
 postgres=# CREATE DATABASE  potter;
@@ -37,19 +40,23 @@ postgres=# \l
 
 ```
 
-Exit (by typing out exit). 
+Exit (by typing out `exit`). 
 
-###### Clone this repository: 
+#### Clone this repository (you need to have git installed): 
 - `git clone https://github.com/kamyashethia/SQLForThePotterhead.git`
 - ` cd SQLForThePotterhead`
 
 There is a `potter_db.sql` in this filepath. 
 
-###### Load data into our database:  
+**Alternatively**, you can download the `potter_db.sql` file to your machine, _or_ copy and paste the script and save in a new .sql file.
+
+#### Load data into our database:  
 On the command line:
 ```sh
 psql -d potter -f potter_db.sql
 ```
+
+(If you saved the script in a new file with a different name, the name of the file must be used with the `-f` switch, instead of `potter_db.sql`)
 
 ###### Check that the data made it in!
 Connect using psql again
