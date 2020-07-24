@@ -2,7 +2,7 @@
 
 When I started to work with joins, I always looked at the following diagram: 
 
-![join_image](images/sql_joins.png)
+![join_image](../images/sql_joins.png)
 (credited URL [link](https://www.pinterest.com/pin/268527196507791080/))
 
 I then diagram the data I want to collect, and looked at the diagram for the SQL. 
@@ -22,7 +22,7 @@ For our case, the `character.name` field should equal the `magical_creatures.own
 
 Now let's think about what data we want by drawing a diagram: 
 
-![magical_creatures_inner_join](images/magical_creatures_inner_join.png)
+![magical_creatures_inner_join](../images/magical_creatures_inner_join.png)
 
 We only want the data at the intersection of the two tables. 
 We can get this data by performing an inner join: 
